@@ -1,4 +1,5 @@
-import { STORAGE_KEYS, INITIAL_TRANSACTIONS } from './config/constants.js';
+import { INITIAL_TRANSACTIONS } from './config/constants.js';
+import { STORAGE_KEYS, APP_SETTINGS } from './config/settings.js';
 import { StorageService } from './services/StorageService.js';
 import { AnalyticsService } from './services/AnalyticsService.js';
 import { ExportService } from './services/ExportService.js';
@@ -19,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function initApp() {
     let transactions = StorageService.load(STORAGE_KEYS.TRANSACTIONS);
 
-
     if (!transactions) {
         transactions = INITIAL_TRANSACTIONS;
         StorageService.save(STORAGE_KEYS.TRANSACTIONS, transactions);
@@ -30,10 +30,10 @@ function initApp() {
         dateInput.value = DateFormatter.getCurrentISODate();
     }
 
-    const settings = StorageService.load(STORAGE_KEYS.SETTINGS) || INITIAL_SETTINGS;
+    const settings = StorageService.load(STORAGE_KEYS.SETTINGS) || APP_SETTINGS;
     SettingsView.applyTheme(settings.theme);
     SettingsView.updateCurrencySymbols(settings.currency);
-    
+
     refreshUI(transactions);
 }
 
@@ -43,7 +43,6 @@ function refreshUI(transactions) {
 
     DashboardView.updateSummary(summary);
     DashboardView.updateBudget(budgetLimit, summary.expenses);
-
     DashboardView.updateChart(transactions);
 
     TableView.render(transactions, TransactionController.handleDeleteTransaction);
@@ -79,20 +78,20 @@ function setupEventListeners() {
     });
 
     const filters = ['globalSearch', 'categoryFilter', 'typeFilter', 'dateFilter'];
-filters.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-        el.addEventListener('change', () => {
-            const currentFilters = {
-                search: document.getElementById('globalSearch').value,
-                category: document.getElementById('categoryFilter').value,
-                type: document.getElementById('typeFilter').value,
-                dateRange: document.getElementById('dateFilter').value
-            };
-            TransactionController.handleFilterChange(currentFilters);
-        });
-    }
-});
+    filters.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', () => {
+                const currentFilters = {
+                    search: document.getElementById('globalSearch').value,
+                    category: document.getElementById('categoryFilter').value,
+                    type: document.getElementById('typeFilter').value,
+                    dateRange: document.getElementById('dateFilter').value
+                };
+                TransactionController.handleFilterChange(currentFilters);
+            });
+        }
+    });
 
     const headers = document.querySelectorAll('#transactions-table thead th');
     const columnMapping = ['date', 'name', 'category', 'amount'];
