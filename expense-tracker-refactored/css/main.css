@@ -1,0 +1,17 @@
+@import 'variables.css';
+@import 'layout.css';
+@import 'components.css';
+
+@media (max-width: 1100px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .app-sidebar { width: 70px; }
+    .sidebar-header span, .sidebar-footer p { display: none; }
+    .app-wrapper { flex-direction: column; }
+}
+
+@media (max-width: 480px) {
+    .app-sidebar { display: none; }
+}

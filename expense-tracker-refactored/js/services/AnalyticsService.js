@@ -1,5 +1,4 @@
 export const AnalyticsService = {
-
     getExpenseTotalsByCategory(transactions) {
         return transactions
             .filter(t => t.type === 'expense')

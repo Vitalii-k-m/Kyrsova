@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTrack Pro — Система управління фінансами</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+    <div id="app-root">
+        <div class="app-wrapper">
+
+            <aside class="app-sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        <span>FinTrack <small>v2.0-refactored</small></span>
+                    </div>
+                </div>
+
+                <nav class="side-nav">
+                    <ul id="main-navigation">
+                        <li class="nav-item active" data-view="dashboard">
+                            <a href="#dashboard">Головна панель</a>
+                        </li>
+                        <li class="nav-item" data-view="reports">
+                            <a href="#reports">Звіти</a>
+                        </li>
+                        <li class="nav-item" data-view="categories">
+                            <a href="#categories">Категорії</a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <div class="user-profile">
+                        <p class="user-name">Данилюк Віталій</p>
+                        <p class="user-group">ІПЗм-25-1</p>
+                    </div>
+                    <button class="btn-logout" id="btnLogout">Вихід</button>
+                </div>
+            </aside>
+
+            <main class="app-content">
+
+                <header class="content-header">
+                    <div class="search-container">
+                        <input type="text" id="globalSearch" placeholder="Пошук транзакцій...">
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="btnOpenModal">
+                            + Додати транзакцію
+                        </button>
+                        <button class="btn btn-secondary" id="btnExport">
+                            Експорт CSV
+                        </button>
+                    </div>
+                </header>
+
+                <div id="view-container">
+
+                    <section class="stats-grid">
+                        <div class="stat-card" id="card-balance">
+                            <h3>Поточний баланс</h3>
+                            <div class="value" id="display-total-balance">0.00 грн</div>
+                        </div>
+
+                        <div class="stat-card" id="card-budget">
+                            <h3>Бюджет</h3>
+                            <div class="progress-wrapper">
+                                <div class="progress-bar"><div id="budget-progress"></div></div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card" id="card-chart">
+                            <h3>Аналітика витрат</h3>
+                            <canvas id="expenseChart"></canvas>
+                        </div>
+                    </section>
+
+                    <section class="data-filters">
+                        </section>
+
+                    <section class="data-table-container">
+                        <table id="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Опис</th>
+                                    <th>Категорія</th>
+                                    <th>Сума</th>
+                                    <th>Дії</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-list">
+                                </tbody>
+                        </table>
+                    </section>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <div id="modal-container"></div>
+
+    <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

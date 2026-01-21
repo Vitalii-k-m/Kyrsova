@@ -1,0 +1,56 @@
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.app-sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+}
+
+.sidebar-header {
+    padding: 25px 20px;
+    background-color: var(--sidebar-dark);
+    border-bottom: 1px solid var(--sidebar-border);
+}
+
+.side-nav {
+    flex-grow: 1;
+    padding: 20px 0;
+}
+
+.side-nav ul { list-style: none; }
+
+.side-nav li a {
+    color: var(--sidebar-text);
+    text-decoration: none;
+    display: block;
+    padding: 12px 25px;
+    transition: 0.2s;
+}
+
+.side-nav li.active a {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.app-content {
+    flex-grow: 1;
+    padding: 25px;
+    background-color: var(--bg-content);
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    background: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+}
