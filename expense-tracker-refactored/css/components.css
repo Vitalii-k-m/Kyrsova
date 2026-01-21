@@ -46,7 +46,6 @@
     border-bottom: 2px solid #edf2f7;
     color: var(--text-muted);
 }
-
 .modal {
     position: fixed;
     z-index: 1000;

@@ -2,7 +2,6 @@ import { STORAGE_KEYS, APP_SETTINGS } from '../config/settings.js';
 import { StorageService } from '../services/StorageService.js';
 import { SettingsView } from '../views/SettingsView.js';
 import { NotificationView } from '../views/NotificationView.js';
-
 export const SettingsController = {
 
     handleThemeChange(theme) {

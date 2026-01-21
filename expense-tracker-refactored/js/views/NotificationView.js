@@ -1,5 +1,4 @@
 export const NotificationView = {
-
     show(message, type = 'success') {
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;

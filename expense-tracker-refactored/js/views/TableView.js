@@ -1,7 +1,6 @@
 import { DateFormatter } from '../utils/DateFormatter.js';
 import { Helpers } from '../utils/Helpers.js';
 import * as TransactionController from '../controllers/TransactionController.js';
-
 export const TableView = {
     render(transactions, onDeleteCallback) {
         const container = document.getElementById('transactions-list');

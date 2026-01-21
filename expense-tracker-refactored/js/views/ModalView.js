@@ -1,5 +1,4 @@
 export const ModalView = {
-
     show(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) modal.style.display = 'block';
@@ -20,7 +19,7 @@ export const ModalView = {
             comment: document.getElementById('inpComment').value
         };
     },
-    
+
     fillForm(data) {
         document.getElementById('inpName').value = data.name;
         document.getElementById('inpAmount').value = data.amount;

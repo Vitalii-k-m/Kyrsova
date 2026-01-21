@@ -7,7 +7,6 @@ export const StorageService = {
             console.error(`[StorageService]: Помилка збереження для ключа ${key}`, error);
         }
     },
-
     load(key) {
         const data = localStorage.getItem(key);
         if (!data) return null;

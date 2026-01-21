@@ -1,5 +1,4 @@
 export const BackupService = {
-
     exportToJSON(transactions, budgetLimit) {
         const dataStr = JSON.stringify({
             transactions: transactions,

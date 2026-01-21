@@ -10,7 +10,6 @@ import { DashboardView } from './views/DashboardView.js';
 import { ModalView } from './views/ModalView.js';
 import { DateFormatter } from './utils/DateFormatter.js';
 import { SettingsView } from './views/SettingsView.js';
-
 document.addEventListener('DOMContentLoaded', () => {
     console.log("[System]: Ініціалізація ректорованої системи...");
     initApp();

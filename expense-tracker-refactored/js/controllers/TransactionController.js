@@ -6,7 +6,6 @@ import { DashboardView } from '../views/DashboardView.js';
 import { NotificationView } from '../views/NotificationView.js';
 import { ModalView } from '../views/ModalView.js';
 import { Validators } from '../utils/Validator.js';
-
 let currentSort = { column: 'date', asc: false };
 
 export function handlePrepareEdit(id) {

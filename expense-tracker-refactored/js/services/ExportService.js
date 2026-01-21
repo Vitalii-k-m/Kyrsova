@@ -3,7 +3,6 @@ export const ExportService = {
         if (!transactions || transactions.length === 0) {
             throw new Error("Немає даних для експорту");
         }
-
         const headers = ['ID', 'Назва', 'Сума', 'Тип', 'Категорія', 'Дата', 'Коментар'];
         const csvContent = [
             '\uFEFF' + headers.join(','),

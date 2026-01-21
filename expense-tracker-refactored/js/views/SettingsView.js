@@ -1,5 +1,4 @@
 export const SettingsView = {
-
     applyTheme(theme) {
         const wrapper = document.querySelector('.app-wrapper');
         const sidebar = document.querySelector('.app-sidebar');

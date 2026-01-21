@@ -1,5 +1,4 @@
 export const DateFormatter = {
-
     toUkrainianFormat(dateStr) {
         if (!dateStr) return "";
         const parts = dateStr.split('-');

@@ -1,5 +1,4 @@
 import { Transaction } from './Transaction.js';
-
 export class FinanceState {
     constructor(transactionsData = [], budgetLimit = 0) {
         this.transactions = transactionsData.map(t => new Transaction(t));

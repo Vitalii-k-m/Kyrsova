@@ -8,7 +8,6 @@ export class Transaction {
         this.date = date;
         this.comment = comment;
     }
-
     isExpense() {
         return this.type === 'expense';
     }

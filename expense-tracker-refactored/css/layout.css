@@ -17,7 +17,6 @@
     background-color: var(--sidebar-dark);
     border-bottom: 1px solid var(--sidebar-border);
 }
-
 .side-nav {
     flex-grow: 1;
     padding: 20px 0;

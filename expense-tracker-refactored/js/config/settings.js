@@ -6,7 +6,6 @@ export const APP_SETTINGS = {
     autoSaveInterval: 30000,
     decimalPlaces: 2
 };
-
 export const DEFAULT_FILTER_STATE = {
     search: '',
     category: 'all',

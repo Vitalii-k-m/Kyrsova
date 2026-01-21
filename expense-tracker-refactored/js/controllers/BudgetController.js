@@ -3,7 +3,6 @@ import { StorageService } from '../services/StorageService.js';
 import { AnalyticsService } from '../services/AnalyticsService.js';
 import { DashboardView } from '../views/DashboardView.js';
 import { NotificationView } from '../views/NotificationView.js';
-
 export function handleUpdateBudget(limit) {
     const numericLimit = parseFloat(limit);
 

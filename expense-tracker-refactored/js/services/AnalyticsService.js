@@ -7,7 +7,6 @@ export const AnalyticsService = {
                 return acc;
             }, {});
     },
-
     getSummary(transactions) {
         return transactions.reduce((summary, t) => {
             if (t.type === 'income') {

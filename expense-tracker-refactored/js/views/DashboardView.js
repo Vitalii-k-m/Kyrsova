@@ -2,7 +2,6 @@ import { Helpers } from '../utils/Helpers.js';
 import { AnalyticsService } from '../services/AnalyticsService.js';
 
 let expenseChartInstance = null;
-
 export const DashboardView = {
 
     updateSummary(summary) {
