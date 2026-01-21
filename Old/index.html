@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система управління фінансами - МОНОЛІТ - Данилюк В.А.</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .legacy-warning {
+            background-color: #ffeb3b;
+            color: #000;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 2px solid #fbc02d;
+        }
+    </style>
+</head>
+<body id="mainBody">
+
+    <div class="legacy-warning">
+        УВАГА: Ви використовуєте застарілу монолітну версію системи (v1.0.4-legacy).
+    </div>
+
+    <div id="wrapper">
+        
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    <span>FinTrack <small>v1.0</small></span>
+                </div>
+            </div>
+
+            <nav class="side-nav">
+                <ul>
+                    <li class="active" onclick="alert('Ви вже на головній')">
+                        <a href="#">Головна панель</a>
+                    </li>
+                    <li onclick="alert('Ця функція в розробці')">
+                        <a href="#">Звіти за місяць</a>
+                    </li>
+                    <li onclick="alert('Ця функція в розробці')">
+                        <a href="#">Категорії витрат</a>
+                    </li>
+                    <li onclick="document.getElementById('settingsModal').style.display='block'">
+                        <a href="#">Налаштування</a>
+                    </li>
+                    <li onclick="document.getElementById('helpModal').style.display='block'">
+                        <a href="#">Допомога</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p><strong>Користувач:</strong><br>Данилюк Віталій</p>
+                <p><strong>Група:</strong> ІПЗм-25-1</p>
+                <button class="btn-logout" onclick="confirm('Вийти з системи?')">Вихід</button>
+            </div>
+        </aside>
+
+        <main id="mainContent">
+            
+            <header class="top-bar">
+                <div class="search-box">
+                    <input type="text" id="globalSearch" placeholder="Швидкий пошук транзакцій..." onkeyup="filterTransactions()">
+                </div>
+                <div class="header-actions">
+                    <button class="btn-primary" id="btnOpenAddModal" onclick="document.getElementById('addTransactionModal').style.display='block'">
+                        + Додати транзакцію
+                    </button>
+                    <button class="btn-secondary" onclick="exportToCSV()">
+                        Експорт даних
+                    </button>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+                
+                <div class="stat-card balance-card">
+                    <div class="card-header">
+                        <h3>Поточний баланс</h3>
+                        <span class="period-tag">Весь час</span>
+                    </div>
+                    <div class="card-body">
+                        <h2 id="mainBalanceDisplay">0.00 грн</h2>
+                        <div class="mini-stats">
+                            <div class="stat-item income">
+                                <span>Доходи:</span>
+                                <strong id="headerIncome">0.00</strong>
+                            </div>
+                            <div class="stat-item expense">
+                                <span>Витрати:</span>
+                                <strong id="headerExpense">0.00</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card budget-card">
+                    <div class="card-header">
+                        <h3>Місячний бюджет</h3>
+                        <button class="btn-edit-small" onclick="document.getElementById('budgetModal').style.display='block'">⚙️</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="budget-info">
+                            <span id="budgetCurrentDisplay">0</span> / <span id="budgetLimitDisplay">0</span> грн
+                        </div>
+                        <div class="progress-container">
+                            <div id="mainProgressBar" class="progress-bar-fill" style="width: 0%"></div>
+                        </div>
+                        <p id="budgetMessage" class="budget-status-text">Встановіть бюджет для контролю витрат</p>
+                    </div>
+                </div>
+
+                <div class="stat-card chart-card">
+                    <div class="card-header">
+                        <h3>Розподіл за категоріями</h3>
+                    </div>
+                    <div class="card-body chart-container">
+                        <canvas id="mainExpenseChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="filters-container">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Період:</label>
+                        <select id="dateFilter" onchange="filterTransactions()">
+                            <option value="all">Всі дати</option>
+                            <option value="today">Сьогодні</option>
+                            <option value="month">Цей місяць</option>
+                            <option value="year">Цей рік</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Категорія:</label>
+                        <select id="categoryFilter" onchange="filterTransactions()">
+                            <option value="all">Всі категорії</option>
+                            <option value="Їжа">Їжа</option>
+                            <option value="Транспорт">Транспорт</option>
+                            <option value="Розваги">Розваги</option>
+                            <option value="Комунальні">Комунальні</option>
+                            <option value="Зарплата">Зарплата</option>
+                            <option value="Здоров'я">Здоров'я</option>
+                            <option value="Інше">Інше</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Тип:</label>
+                        <select id="typeFilter" onchange="filterTransactions()">
+                            <option value="all">Всі типи</option>
+                            <option value="income">Тільки доходи</option>
+                            <option value="expense">Тільки витрати</option>
+                        </select>
+                    </div>
+                    <button class="btn-reset" onclick="resetFilters()">Скинути</button>
+                </div>
+            </section>
+
+            <section class="data-section">
+                <div class="table-container">
+                    <table id="mainDataTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable(0)">Дата ↕</th>
+                                <th onclick="sortTable(1)">Назва ↕</th>
+                                <th onclick="sortTable(2)">Категорія ↕</th>
+                                <th onclick="sortTable(3)">Сума ↕</th>
+                                <th>Дії</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsBody">
+                            </tbody>
+                    </table>
+                    <div id="noDataMessage" style="display: none; text-align: center; padding: 40px;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="100" alt="No data">
+                        <p>Транзакцій не знайдено. Додайте першу!</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="instructions-section">
+                <div class="info-alert">
+                    <h4>Пам'ятка для користувача:</h4>
+                    <ul>
+                        <li>Використовуйте кнопку <strong>"Експорт"</strong> для збереження даних у форматі CSV (Excel).</li>
+                        <li>Дані зберігаються у вашому браузері автоматично через <strong>localStorage</strong>.</li>
+                        <li>Для видалення транзакції натисніть на іконку кошика в крайній правій колонці.</li>
+                        <li>При перевищенні бюджету на 90% індикатор стане червоним.</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="addTransactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Нова транзакція</h2>
+                <span class="close" onclick="document.getElementById('addTransactionModal').style.display='none'">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Назва операції*</label>
+                    <input type="text" id="inpName" placeholder="Наприклад: Купівля продуктів">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Сума*</label>
+                        <input type="number" id="inpAmount" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Тип*</label>
+                        <select id="inpType">
+                            <option value="expense">Витрата</option>
+                            <option value="income">Дохід</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Категорія</label>
+                        <select id="inpCategory">
+                            <option value="Їжа">Їжа</option>
+                            <option value="Транспорт">Транспорт</option>
+                            <option value="Розваги">Розваги</option>
+                            <option value="Комунальні">Комунальні</option>
+                            <option value="Зарплата">Зарплата</option>
+                            <option value="Здоров'я">Здоров'я</option>
+                            <option value="Інше">Інше</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Дата*</label>
+                        <input type="date" id="inpDate">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Коментар (необов'язково)</label>
+                    <textarea id="inpComment" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="document.getElementById('addTransactionModal').style.display='none'">Скасувати</button>
+                <button class="btn-save" onclick="addTransaction()">Зберегти транзакцію</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="budgetModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Налаштування бюджету</h2>
+                <span class="close" onclick="document.getElementById('budgetModal').style.display='none'">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Вкажіть ліміт витрат на поточний місяць:</p>
+                <input type="number" id="inpBudgetLimit" placeholder="Сума в грн">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-save" onclick="updateBudgetLimit()">Оновити</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Довідка системи</h2>
+                <span class="close" onclick="document.getElementById('helpModal').style.display='none'">&times;</span>
+            </div>
+            <div class="modal-body">
+                <h3>Про проєкт</h3>
+                <p>Даний програмний продукт розроблений в рамках курсової роботи з дисципліни "Розробка та реінжиніринг програмних систем".</p>
+                <h3>Автор</h3>
+                <p>Студент групи ІПЗм-25-1 Данилюк В.А.</p>
+                <h3>Технології</h3>
+                <p>HTML5, CSS3 (Monolithic), Vanilla JavaScript, Chart.js API.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Налаштування профілю</h2>
+                <span class="close" onclick="document.getElementById('settingsModal').style.display='none'">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Налаштування валюти: <strong>UAH (₴)</strong></p>
+                <p>Мова інтерфейсу: <strong>Українська</strong></p>
+                <hr>
+                <button onclick="localStorage.clear(); location.reload();" style="background: red; color: white; padding: 10px;">
+                    ОЧИСТИТИ ВСІ ДАНІ (Скидання)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <p>&copy; 2025-2026 Державний університет "Житомирська політехніка". Кафедра комп'ютерних наук.</p>
+    </footer>
+
+    <script src="script.js"></script>
+
+    <script>
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
