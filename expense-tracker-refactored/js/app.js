@@ -37,11 +37,16 @@ function refreshUI(transactions) {
 
     DashboardView.updateSummary(summary);
     DashboardView.updateBudget(budgetLimit, summary.expenses);
+
+    DashboardView.updateChart(transactions);
+
     TableView.render(transactions, TransactionController.handleDeleteTransaction);
 }
 
 function setupEventListeners() {
     document.getElementById('btnOpenModal').addEventListener('click', () => {
+        ModalView.setEditMode(false); // Скидаємо режим редагування перед відкриттям
+        ModalView.clearForm();
         ModalView.show('addTransactionModal');
     });
 
@@ -49,10 +54,16 @@ function setupEventListeners() {
     if (btnSave) {
         btnSave.addEventListener('click', () => {
             const formData = ModalView.getFormData();
-            TransactionController.handleAddTransaction(formData);
+            const isEdit = btnSave.dataset.mode === 'edit';
+            const transactionId = parseInt(btnSave.dataset.id);
+
+            if (isEdit) {
+                TransactionController.handleEditTransaction(transactionId, formData);
+            } else {
+                TransactionController.handleAddTransaction(formData);
+            }
 
             refreshUI(StorageService.load(STORAGE_KEYS.TRANSACTIONS));
-            ModalView.hide('addTransactionModal');
         });
     }
 
@@ -72,6 +83,19 @@ function setupEventListeners() {
                     type: document.getElementById('typeFilter').value
                 };
                 TransactionController.handleFilterChange(currentFilters);
+            });
+        }
+    });
+
+    const headers = document.querySelectorAll('#transactions-table thead th');
+    const columnMapping = ['date', 'name', 'category', 'amount'];
+
+    headers.forEach((header, index) => {
+        if (index < columnMapping.length) {
+            header.style.cursor = 'pointer'; // Візуальна підказка
+            header.title = 'Натисніть для сортування';
+            header.addEventListener('click', () => {
+                TransactionController.handleSort(columnMapping[index]);
             });
         }
     });

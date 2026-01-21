@@ -7,6 +7,43 @@ import { NotificationView } from '../views/NotificationView.js';
 
 let currentSort = { column: 'date', asc: false };
 
+export function handlePrepareEdit(id) {
+    const transactions = StorageService.load(STORAGE_KEYS.TRANSACTIONS) || [];
+    const transaction = transactions.find(t => t.id === id);
+
+    if (transaction) {
+        ModalView.fillForm(transaction);
+        ModalView.setEditMode(true, id);
+        ModalView.show('addTransactionModal');
+    } else {
+        NotificationView.show('Помилка: Транзакцію не знайдено!', 'error');
+    }
+}
+
+export function handleEditTransaction(id, formData) {
+    const transactions = StorageService.load(STORAGE_KEYS.TRANSACTIONS) || [];
+    const index = transactions.findIndex(t => t.id === id);
+
+    if (index !== -1) {
+        transactions[index] = {
+            ...transactions[index],
+            ...formData,
+            amount: parseFloat(formData.amount)
+        };
+
+        StorageService.save(STORAGE_KEYS.TRANSACTIONS, transactions);
+
+        updateAllViews(transactions);
+        ModalView.setEditMode(false);
+        ModalView.hide('addTransactionModal');
+        ModalView.clearForm();
+
+        NotificationView.show('Запис оновлено успішно!', 'success');
+    } else {
+        NotificationView.show('Помилка оновлення!', 'error');
+    }
+}
+
 export function handleAddTransaction(formData) {
     const newTransaction = {
         id: Date.now(),
@@ -34,7 +71,6 @@ export function handleDeleteTransaction(id) {
 }
 
 export function handleSort(column) {
-    // Якщо натиснуто на ту саму колонку — змінюємо напрямок, інакше — нова колонка
     if (currentSort.column === column) {
         currentSort.asc = !currentSort.asc;
     } else {
