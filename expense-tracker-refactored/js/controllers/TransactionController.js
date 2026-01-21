@@ -1,38 +1,54 @@
 import { STORAGE_KEYS } from '../config/settings.js';
-import * as Storage from '../modules/storage.js';
-import * as UI from '../modules/ui.js';
+import { StorageService } from '../services/StorageService.js';
+import { AnalyticsService } from '../services/AnalyticsService.js';
+import { TableView } from '../views/TableView.js';
+import { DashboardView } from '../views/DashboardView.js';
+import { NotificationView } from '../views/NotificationView.js';
+
+let currentSort = { column: 'date', asc: false };
 
 export function handleAddTransaction(formData) {
-    // 1. Створюємо об'єкт транзакції з отриманих даних
     const newTransaction = {
         id: Date.now(),
         ...formData,
         amount: parseFloat(formData.amount)
     };
 
-    // 2. Отримуємо поточний список та додаємо нову
-    const transactions = Storage.get(STORAGE_KEYS.TRANSACTIONS) || [];
+    const transactions = StorageService.load(STORAGE_KEYS.TRANSACTIONS) || [];
     transactions.push(newTransaction);
 
-    // 3. Зберігаємо та оновлюємо інтерфейс
-    Storage.save(STORAGE_KEYS.TRANSACTIONS, transactions);
-    UI.refreshDashboard(transactions);
+    StorageService.save(STORAGE_KEYS.TRANSACTIONS, transactions);
 
-    UI.notify('Транзакцію додано успішно!', 'success');
+    updateAllViews(transactions);
+    NotificationView.show('Транзакцію додано!', 'success');
 }
 
 export function handleDeleteTransaction(id) {
-    if (!confirm("Ви впевнені, що хочете видалити цей запис?")) return;
+    if (!confirm("Ви впевнені?")) return;
 
-    const transactions = Storage.get(STORAGE_KEYS.TRANSACTIONS) || [];
+    const transactions = StorageService.load(STORAGE_KEYS.TRANSACTIONS) || [];
     const filtered = transactions.filter(t => t.id !== id);
 
-    Storage.save(STORAGE_KEYS.TRANSACTIONS, filtered);
-    UI.refreshDashboard(filtered);
+    StorageService.save(STORAGE_KEYS.TRANSACTIONS, filtered);
+    updateAllViews(filtered);
+}
+
+export function handleSort(column) {
+    // Якщо натиснуто на ту саму колонку — змінюємо напрямок, інакше — нова колонка
+    if (currentSort.column === column) {
+        currentSort.asc = !currentSort.asc;
+    } else {
+        currentSort.column = column;
+        currentSort.asc = true;
+    }
+
+    const transactions = StorageService.load(STORAGE_KEYS.TRANSACTIONS) || [];
+    const sorted = sortTransactions(transactions);
+    TableView.render(sorted, handleDeleteTransaction);
 }
 
 export function handleFilterChange(filters) {
-    const transactions = Storage.get(STORAGE_KEYS.TRANSACTIONS) || [];
+    const transactions = StorageService.load(STORAGE_KEYS.TRANSACTIONS) || [];
 
     const filtered = transactions.filter(t => {
         const searchMatch = t.name.toLowerCase().includes(filters.search.toLowerCase());
@@ -41,6 +57,29 @@ export function handleFilterChange(filters) {
         return searchMatch && catMatch && typeMatch;
     });
 
-    UI.renderTable(filtered);
-    UI.updateCharts(filtered);
+    const sorted = sortTransactions(filtered);
+    TableView.render(sorted, handleDeleteTransaction);
+}
+
+function sortTransactions(data) {
+    return [...data].sort((a, b) => {
+        let valA = a[currentSort.column];
+        let valB = b[currentSort.column];
+
+        if (typeof valA === 'string') {
+            return currentSort.asc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        }
+        return currentSort.asc ? valA - valB : valB - valA;
+    });
+}
+
+function updateAllViews(transactions) {
+    const summary = AnalyticsService.getSummary(transactions);
+    const budgetLimit = StorageService.load(STORAGE_KEYS.BUDGET_LIMIT) || 0;
+
+    DashboardView.updateSummary(summary);
+    DashboardView.updateBudget(budgetLimit, summary.expenses);
+
+    const sorted = sortTransactions(transactions);
+    TableView.render(sorted, handleDeleteTransaction);
 }

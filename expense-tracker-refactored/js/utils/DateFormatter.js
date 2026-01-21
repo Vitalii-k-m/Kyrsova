@@ -1,24 +1,13 @@
-export const AnalyticsService = {
+export const DateFormatter = {
 
-    getExpenseTotalsByCategory(transactions) {
-        return transactions
-            .filter(t => t.type === 'expense')
-            .reduce((acc, t) => {
-                acc[t.category] = (acc[t.category] || 0) + t.amount;
-                return acc;
-            }, {});
+    toUkrainianFormat(dateStr) {
+        if (!dateStr) return "";
+        const parts = dateStr.split('-');
+        if (parts.length !== 3) return dateStr;
+        return `${parts[2]}.${parts[1]}.${parts[0]}`;
     },
 
-    getSummary(transactions) {
-        return transactions.reduce((summary, t) => {
-            if (t.type === 'income') {
-                summary.income += t.amount;
-                summary.balance += t.amount;
-            } else {
-                summary.expenses += t.amount;
-                summary.balance -= t.amount;
-            }
-            return summary;
-        }, { balance: 0, income: 0, expenses: 0 });
+    getCurrentISODate() {
+        return new Date().toISOString().split('T')[0];
     }
 };

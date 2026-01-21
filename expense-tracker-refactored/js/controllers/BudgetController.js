@@ -1,19 +1,23 @@
 import { STORAGE_KEYS } from '../config/settings.js';
-import * as Storage from '../modules/storage.js';
-import * as UI from '../modules/ui.js';
+import { StorageService } from '../services/StorageService.js';
+import { AnalyticsService } from '../services/AnalyticsService.js';
+import { DashboardView } from '../views/DashboardView.js';
+import { NotificationView } from '../views/NotificationView.js';
 
 export function handleUpdateBudget(limit) {
     const numericLimit = parseFloat(limit);
 
     if (isNaN(numericLimit) || numericLimit < 0) {
-        UI.notify('Введіть коректну суму бюджету!', 'error');
+        NotificationView.show('Введіть коректну суму бюджету!', 'error');
         return;
     }
 
-    Storage.save(STORAGE_KEYS.BUDGET_LIMIT, numericLimit);
+    StorageService.save(STORAGE_KEYS.BUDGET_LIMIT, numericLimit);
 
-    const transactions = Storage.get(STORAGE_KEYS.TRANSACTIONS) || [];
-    UI.updateBudgetDisplay(numericLimit, transactions);
+    const transactions = StorageService.load(STORAGE_KEYS.TRANSACTIONS) || [];
+    const summary = AnalyticsService.getSummary(transactions);
 
-    UI.notify('Бюджет оновлено!', 'success');
+    DashboardView.updateBudget(numericLimit, summary.expenses);
+
+    NotificationView.show('Бюджет оновлено!', 'success');
 }
